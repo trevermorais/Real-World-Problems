@@ -12,6 +12,10 @@ Wrote an audio-enhancing program in C that increases the magnitude of the sound 
 
 Caesar encryption is a basic substitution method that shifts each letter in a message by a fixed number of positions down the alphabet. Im immulating the same principle using a C program
 
+## Hamming Code — Single Bit Error Correction
+
+A single bit in a transmitted message can flip (1→0 or 0→1). Hamming code adds redundant parity bits so the receiver can detect and correct a single-bit error without retransmission.
+
 ## DNA Sequencing
 
 Built a DNA-matching program that identifies an individual from a CSV database of Short Tandem Repeat (STR) counts, comparing sequences using string parsing and dictionary lookups.
