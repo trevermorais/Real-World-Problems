@@ -1,6 +1,6 @@
 # 💡 Hamming Code, Explained Simply
 
-> **One sentence:** Hamming code lets a computer **spot and fix a mistake in a message all by itself**, without asking for the message to be sent again.
+> **One sentence:** Hamming code lets a computer **spot and fix a mistake in a message all by itself**, without asking for the message to be sent again. WEBSITE for more understanding : https://emerald-oralla-51.tiiny.site
 
 ---
 
