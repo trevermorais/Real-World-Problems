@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hamming Helpers</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap">
+<style>
+:root{--bg1:#ffe3f1;--bg2:#cfeeff;--card:rgba(255,255,255,.82);--text:#2a1f4d;--muted:#5b5280;--off:#cfc9e8;--lit:#ffc800;--red:#ef4444;--blue:#2f8fe8;--green:#22a559;--line:rgba(42,31,77,.15);--btn:#6d3df5;--btntext:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg1:#2b1055;--bg2:#0b4f5c;--card:rgba(255,255,255,.1);--text:#fff;--muted:#d6d0f5;--off:#4a4470;--lit:#ffd43b;--red:#ff6b6b;--blue:#58b4ff;--green:#5ee08a;--line:rgba(255,255,255,.2);--btn:#ffd43b;--btntext:#2b1055}}
+:root[data-theme="dark"]{--bg1:#2b1055;--bg2:#0b4f5c;--card:rgba(255,255,255,.1);--text:#fff;--muted:#d6d0f5;--off:#4a4470;--lit:#ffd43b;--red:#ff6b6b;--blue:#58b4ff;--green:#5ee08a;--line:rgba(255,255,255,.2);--btn:#ffd43b;--btntext:#2b1055}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:'Fredoka','Trebuchet MS',system-ui,sans-serif;color:var(--text);background:linear-gradient(160deg,var(--bg1),var(--bg2)) fixed;font-size:18px;line-height:1.5}
+main{max-width:720px;margin:0 auto;padding:20px 14px 60px}
+h1{font-size:clamp(28px,6vw,40px);margin:6px 0 2px;text-align:center;line-height:1.1}
+.sub{text-align:center;color:var(--muted);margin:0 0 16px}
+.steps{display:flex;gap:8px;justify-content:center;margin-bottom:14px}
+.steps button{flex:1;max-width:150px;border:2px solid var(--line);background:var(--card);color:var(--text);border-radius:14px;padding:8px 4px;font:inherit;font-size:14px;cursor:pointer}
+.steps button.on{border-color:var(--btn);box-shadow:0 0 0 3px color-mix(in srgb,var(--btn) 35%,transparent);font-weight:700}
+.steps button.done{opacity:.85}
+.card{background:var(--card);border:2px solid var(--line);border-radius:24px;padding:18px;backdrop-filter:blur(8px);margin-bottom:14px}
+.card h2{margin:0 0 6px;font-size:24px}
+.big{font-size:56px;text-align:center;margin:4px 0}
+.row{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:14px 0}
+.seat{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px;border-radius:16px;border:2px solid var(--line);background:transparent;color:var(--text);font:inherit;position:relative;transition:transform .15s,opacity .2s}
+.seat.click{cursor:pointer}.seat.click:hover{transform:translateY(-4px)}
+.seat.dim{opacity:.25}
+.seat.par{border-style:dashed}
+.bulb{width:clamp(26px,8vw,40px);aspect-ratio:1;border-radius:50%;background:var(--off);transition:all .25s}
+.seat.on .bulb{background:var(--lit);box-shadow:0 0 18px 4px var(--lit)}
+.seat b{font-size:16px}.seat small{font-size:11px;color:var(--muted)}
+.dots{display:flex;gap:3px;height:8px}.dots i{width:8px;height:8px;border-radius:50%}
+.badge{position:absolute;top:-14px;right:-4px;font-size:24px;animation:pop .35s}
+.seat.bad{border-color:var(--red);border-width:3px}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+.buddies{display:grid;gap:10px}
+.buddy{border-left:8px solid;border-radius:14px;padding:10px 12px;background:color-mix(in srgb,var(--text) 6%,transparent);cursor:pointer;font-size:16px}
+.buddy.sel{outline:3px solid var(--text)}
+.buddy .who{font-weight:700;font-size:18px}
+.btn{font:inherit;font-weight:600;border:0;border-radius:999px;padding:12px 22px;background:var(--btn);color:var(--btntext);cursor:pointer;font-size:18px;margin:4px 6px 4px 0}
+.btn.alt{background:transparent;color:var(--text);border:2px solid var(--line)}
+.btn:focus-visible,.seat:focus-visible,.buddy:focus-visible,.steps button:focus-visible{outline:3px solid var(--text);outline-offset:2px}
+.nav{display:flex;justify-content:space-between;gap:8px}
+.chips{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0}
+.chip{border-radius:16px;padding:8px 14px;font-weight:700;color:#fff;text-align:center;min-width:90px}
+.say{background:color-mix(in srgb,var(--text) 8%,transparent);border-radius:16px;padding:12px 14px;margin:10px 0}
+.ok{color:var(--green);font-weight:700}.no{color:var(--red);font-weight:700}
+details{margin-top:10px;font-size:15px;color:var(--muted)}summary{cursor:pointer}
+code{background:color-mix(in srgb,var(--text) 12%,transparent);padding:1px 6px;border-radius:6px;font-size:14px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+<h1>💡 Hamming Helpers</h1>
+<p class="sub">How computers fix their own mistakes. No computer skills needed!</p>
+<div class="steps" id="steps"></div>
+<div id="stage"></div>
+<div class="nav" id="nav"></div>
+</main>
+<script>
+const GROUPS={1:[1,3,5,7],2:[2,3,6,7],4:[4,5,6,7]};
+const COL={1:'var(--red)',2:'var(--blue)',4:'var(--green)'};
+const NAME={1:'Ruby',2:'Bluey',4:'Leafy'};
+const TITLES=['The story','Make a message','Gremlin time','Be a detective'];
+let step=0,data=[1,0,1,1],flip=0,checked=false,fixed=false,hl=0;
+
+function encode(d){const b=[0,0,0,d[0],0,d[1],d[2],d[3]];
+ b[1]=(b[3]+b[5]+b[7])%2;b[2]=(b[3]+b[6]+b[7])%2;b[4]=(b[5]+b[6]+b[7])%2;return b}
+const sent=()=>encode(data);
+function got(){const b=sent();if(flip)b[flip]^=1;return b}
+function syn(b){const p=g=>GROUPS[g].reduce((a,i)=>a^b[i],0);return{p1:p(1),p2:p(2),p4:p(4),n:p(4)*4+p(2)*2+p(1)}}
+
+function row(bits,o={}){return '<div class="row">'+[1,2,3,4,5,6,7].map(i=>{
+ const par=!(i&(i-1)),dim=o.hl&&!GROUPS[o.hl].includes(i);
+ const dots=[1,2,4].filter(g=>GROUPS[g].includes(i)).map(g=>`<i style="background:${COL[g]}"></i>`).join('');
+ return `<div class="seat ${par?'par':''} ${bits[i]?'on':''} ${dim?'dim':''} ${o.bad==i?'bad':''} ${o.click?'click':''}" ${o.click?`tabindex="0" role="button" aria-label="Seat ${i}" onclick="${o.click}(${i})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${o.click}(${i})}"`:''}>${o.badge==i?'<span class="badge">😈</span>':''}<span class="bulb"></span><b>${i}</b><small>${par?NAME[i]:'You'}</small><span class="dots">${dots}</span></div>`}).join('')+'</div>'}
+
+function buddy(g,b,mode){
+ const all=GROUPS[g],idx=mode=='enc'?all.filter(i=>i!=g):all,n=idx.reduce((a,i)=>a+b[i],0);
+ let txt;
+ if(mode=='enc')txt=`I watch seats ${idx.join(', ')}. Lit bulbs: <b>${n}</b>. `+(n%2?`Someone has no partner! I switch <b>my</b> bulb ON to make a pair. 👫`:`Everyone has a partner, so my bulb stays OFF. 👍`);
+ else if(!checked)txt=`I watch seats ${all.join(', ')}. Tap “Ask the buddies” and I’ll count!`;
+ else txt=`I watch seats ${all.join(', ')}. Lit bulbs: <b>${n}</b>. `+(n%2?`<span class="no">Odd ❌ someone is lonely, something is wrong in my group!</span>`:`<span class="ok">Even ✅ all paired up, my group is fine.</span>`);
+ return `<div class="buddy ${hl==g?'sel':''}" tabindex="0" style="border-color:${COL[g]}" onclick="setHl(${g})" onkeydown="if(event.key==='Enter')setHl(${g})"><div class="who" style="color:${COL[g]}">${['','🔴','🔵','','🟢'][g]} ${NAME[g]}</div>${txt}</div>`}
+
+function setHl(g){hl=hl==g?0:g;render()}
+function toggle(i){const k={3:0,5:1,6:2,7:3}[i];if(k===undefined)return;data[k]^=1;flip=0;checked=fixed=false;render()}
+function gremlin(i){flip=flip==i?0:i;checked=fixed=false;render()}
+function rand(){gremlin(1+Math.floor(Math.random()*7))}
+function go(n){step=Math.max(0,Math.min(3,n));hl=0;render();scrollTo({top:0,behavior:'smooth'})}
+function check(){checked=true;render()}
+function fix(){fixed=true;render()}
+function reset(){flip=0;checked=fixed=false;render()}
+
+function render(){
+ document.getElementById('steps').innerHTML=TITLES.map((t,i)=>`<button class="${i==step?'on':''} ${i<step?'done':''}" onclick="go(${i})">${['📖','🎛️','😈','🔎'][i]}<br>${t}</button>`).join('');
+ let h='';
+ if(step==0)h=`<div class="card"><div class="big">📨 → 🕳️ → 📬</div><h2>Sending bulbs through a tunnel</h2>
+ <p>Imagine you send 4 light bulbs to a friend. Some are ON, some are OFF. That’s your secret message!</p>
+ <p>But the tunnel has a naughty <b>gremlin</b> 😈. Sometimes he flips one bulb. ON becomes OFF, or OFF becomes ON. Your friend can’t call you to ask “what did you mean?”</p>
+ <div class="say">💡 <b>The trick:</b> we add <b>3 helper bulbs</b> with 3 buddies 🔴 🔵 🟢. Together they can spot the gremlin’s trick <i>and</i> fix it. Computers use this in phones, memory chips, and satellites.</div>
+ <button class="btn" onclick="go(1)">Let’s play!</button></div>`;
+ if(step==1){const s=sent();h=`<div class="card"><h2>1. Make your message</h2>
+ <p>Tap the bulbs with a solid border to switch them ON or OFF. The dashed ones belong to the helpers.</p>
+ ${row(s,{click:'toggle',hl})}
+ <p>Your message: <b style="font-size:24px">${data.join('')}</b></p></div>
+ <div class="card"><h2>The buddies fill in their bulbs</h2>
+ <p>Each buddy watches a few seats (see their colored dots). Their rule: <b>every lit bulb needs a partner</b>. If one is left alone, the buddy lights their own bulb.</p>
+ <div class="buddies">${[1,2,4].map(g=>buddy(g,s,'enc')).join('')}</div>
+ <p style="font-size:15px;color:var(--muted)">Tip: tap a buddy to see only their seats.</p></div>`}
+ if(step==2){const s=sent();h=`<div class="card"><h2>2. Here comes the gremlin 😈</h2>
+ <p>Here is your message with its helper bulbs, ready to go through the tunnel. Tap <b>any</b> bulb to let the gremlin flip it!</p>
+ ${row(got(),{click:'gremlin',badge:flip,bad:flip})}
+ <p>${flip?`Oh no! The gremlin flipped <b>seat ${flip}</b>. 🙈 Your friend doesn’t know which one.`:'No gremlin yet. Tap a bulb or press the button.'}</p>
+ <button class="btn" onclick="rand()">😈 Random gremlin</button><button class="btn alt" onclick="gremlin(flip)" ${flip?'':'disabled style="opacity:.4"'}>Send without gremlin</button></div>`}
+ if(step==3){const r=got(),sy=syn(r),shown=fixed?(()=>{const c=r.slice();if(sy.n)c[sy.n]^=1;return c})():r;
+ h=`<div class="card"><h2>3. Your friend is the detective 🔎</h2>
+ <p>Your friend got these bulbs. ${flip?'One was changed by the gremlin, but they don’t know which!':'Maybe the gremlin stayed home?'}</p>
+ ${row(shown,{hl,bad:checked&&sy.n&&!fixed?sy.n:0,badge:checked&&sy.n&&!fixed?sy.n:0})}
+ <div class="buddies">${[1,2,4].map(g=>buddy(g,r,'chk')).join('')}</div>
+ ${!checked?`<p><button class="btn" onclick="check()">Ask the buddies 🙋</button></p>`:`
+ <div class="say"><b>Buddy answers:</b> ❌ means 1 and ✅ means 0. Read them as a number: Leafy, Bluey, Ruby.
+ <div class="chips">${[[4,sy.p4],[2,sy.p2],[1,sy.p1]].map(([g,v])=>`<div class="chip" style="background:${g==4?'var(--green)':g==2?'var(--blue)':'var(--red)'}">${NAME[g]}<br>${v?'❌ 1':'✅ 0'}</div>`).join('')}</div>
+ <div style="text-align:center;font-size:22px"><b>${sy.p4}${sy.p2}${sy.p1}</b> in number-language = <b>${sy.n}</b></div>
+ <p style="text-align:center;margin:6px 0 0">${sy.n?`🎯 The gremlin hit <b>seat ${sy.n}</b>!`:'🎉 Nobody complained. No gremlin!'}</p></div>
+ ${sy.n&&!fixed?`<button class="btn" onclick="fix()">Flip seat ${sy.n} back 🔧</button>`:''}
+ ${(fixed||!sy.n)?`<div class="say"><span class="ok">Message found: ${[3,5,6,7].map(i=>shown[i]).join('')}</span> ${[3,5,6,7].map(i=>shown[i]).join('')==data.join('')?'🎉 Same as what you sent!':''}</div>`:''}
+ <button class="btn alt" onclick="reset()">Try again</button>`}
+ <details><summary>Nerd corner (the real code)</summary><p>Same math as the C program: <code>./hamming encode ${data.join('')}</code> gives <code>${sent().slice(1).join('')}</code>. Then <code>./hamming correct ${r.slice(1).join('')}</code> finds the error. Each seat’s number written in binary tells which buddies watch it. Seat 6 is 110, so Bluey and Leafy watch it. That’s why the ❌ pattern spells the broken seat. Limit: one gremlin flip at a time.</p></details></div>`}
+ document.getElementById('stage').innerHTML=h;
+ document.getElementById('nav').innerHTML=`<button class="btn alt" onclick="go(${step-1})" ${step?'':'style="visibility:hidden"'}>← Back</button><button class="btn" onclick="go(${step+1})" ${step<3?'':'style="visibility:hidden"'}>Next →</button>`}
+render();
+</script>
+</body>
+</html>
